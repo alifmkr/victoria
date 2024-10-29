@@ -5,4 +5,9 @@
 - Alif Muhammad Karim
 
 ## Project :
-Wep aplikasi tentang kasir toko buah melon
+Wep aplikasi kasir toko buah melon
+
+### Clone :
+- first Create database name "wf_victoria"
+- pull
+- run php artisan migrate / migrate:rollback
