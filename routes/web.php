@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\PosController;
+use App\Http\Controllers\ProductController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -36,14 +38,9 @@ Route::prefix('/admin')->group(function () {
         return view('/dashboard')->with("page", $page);
     });
 
-    Route::get('/pos', function () {
-        $page = array(
-            "page" => "Point of Sales",
-            "description" => "Halaman inti untuk melakukan transaksi pembelian. Fitur utama termasuk pencarian produk, total pembelian, dan metode pembayaran. Halaman ini memungkinkan kasir untuk menyelesaikan transaksi dengan cepat dan efisien.",
-        );
-
-        return view('/pos')->with('page', $page);
-    });
+    Route::get('/pos', [PosController::class, 'index']);
+    Route::post('/pos/add', [PosController::class, 'addToCart'])->name('pos.add');
+    Route::post('/pos/checkout', [PosController::class, 'checkout'])->name('pos.checkout');
 
     Route::get('/inventory', function () {
         $page = array(
