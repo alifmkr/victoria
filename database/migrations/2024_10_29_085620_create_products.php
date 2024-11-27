@@ -17,7 +17,6 @@ class CreateProducts extends Migration
             $table->id();
             $table->timestamps();
             $table->string("name");
-            $table->string("category");
             $table->integer("price");
             $table->integer("stock");
         });

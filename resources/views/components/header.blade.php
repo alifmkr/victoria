@@ -1,5 +1,5 @@
 <header class="text-black p-4">
-    <div class="container mx-auto flex justify-between">
+    <div class="container mx-auto flex justify-between items-center">
         <div class="logo"><a href="/" class="text-2xl font-bold">Victoria</a>
         </div>
         <nav class="space-x-4">

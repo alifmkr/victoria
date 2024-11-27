@@ -1,7 +1,9 @@
 <?php
 
+use App\Http\Controllers\CartController;
 use App\Http\Controllers\PosController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\TransactionController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -39,8 +41,37 @@ Route::prefix('/admin')->group(function () {
     });
 
     Route::get('/pos', [PosController::class, 'index']);
-    Route::post('/pos/add', [PosController::class, 'addToCart'])->name('pos.add');
-    Route::post('/pos/checkout', [PosController::class, 'checkout'])->name('pos.checkout');
+    // Menambah Produk ke keranjang
+    // Route::post('/pos/add', [PosController::class, 'addToCart'])->name('pos.add');
+    // Mengganti Produk di form
+    // Route::post('/pos/checkout', [PosController::class, 'checkout'])->name('pos.checkout');
+
+    // =============== PRODUCTS ==============================================
+    // get All products
+    Route::get('/products', [ProductController::class, 'index'])->name("products.index");
+    // get 1 product
+    Route::get('/products/{id}', [ProductController::class, 'getProduct'])->name("products.getById");
+    // add 1 row data product
+    Route::post('/products/add', [ProductController::class, 'addProduct'])->name("products.add");
+    ;
+
+    // =============== CART ===================================================
+    // get All Cart Items
+    Route::get('/cartItems', [CartController::class, 'index'])->name("cart.index");
+    // store data to cart
+    Route::post('/cartItems/add', [CartController::class, 'store'])->name("cart.add");
+    // delete 1 item in cart
+    Route::delete('/cartItems/{id}', [CartController::class, 'remove'])->name("cart.remove");
+
+    // ============== Transaction ================================================
+    // get All Transactions
+    Route::get('/transactions', [TransactionController::class, 'index'])->name("transaction.index");
+    // Store data transaction
+    Route::post('/transactions/add', [TransactionController::class, 'store'])->name("transaction.add");
+    // delete 1 transaction
+    Route::delete('/transactions/{id}', [TransactionController::class, 'destroy'])->name('transaction.destroy');
+    // route to send email invoice
+    Route::get("/transactions/invoice/{id}", [TransactionController::class, "downloadInvoice"])->name("transaction.invoice");
 
     Route::get('/inventory', function () {
         $page = array(
@@ -50,13 +81,8 @@ Route::prefix('/admin')->group(function () {
         return view('/inventory')->with("page", $page);
     });
 
-    Route::get('/transactions', function () {
-        $page = array(
-            "page" => "Transactions Management",
-            "description" => "Halaman yang menyimpan semua riwayat transaksi yang pernah dilakukan. Kasir dan admin dapat mencari dan melihat detail setiap transaki, termasuk item yang dibeli, jumlah yang dibayar, metode pembayaran, dan waktu transaksi.",
-        );
-        return view('/transactions')->with("page", $page);
-    });
+    // Route::get('/transactions', [TransactionController::class, "index"]);
+    // Route::get('/transactions', [TransactionController::class, 'index'])->name("transaction.index");
 
     Route::get('/user', function () {
         $page = array(
