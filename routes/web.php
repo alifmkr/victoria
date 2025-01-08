@@ -1,11 +1,13 @@
 <?php
 
-use App\Http\Controllers\CartController;
-use App\Http\Controllers\PosController;
-use App\Http\Controllers\ProductController;
-use App\Http\Controllers\TransactionController;
 use Illuminate\Support\Facades\Route;
 
+use App\Http\Controllers\PosController;
+use App\Http\Controllers\CartController;
+use App\Http\Controllers\TransactionController;
+use App\Http\Controllers\InventoryController;
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\Controller;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -21,23 +23,21 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-// Route halaman login
-Route::get('/login', function () {
-    return view('/login');
-});
+// Route::get('/dashboard', function () {
+//     return view('dashboard');
+// })->middleware(['auth'])->name('dashboard');
 
-// redirect halaman ketika halaman logout di akses halaman login
-Route::redirect('/logout', '/login');
+Route::middleware('auth')->group(function () {
 
-// page only for admin
-Route::prefix('/admin')->group(function () {
+    // page only for admin
+    // Route::prefix('/admin')->group(function () {
 
     Route::get('/dashboard', function () {
         $page = array(
             "page" => "Dashboard",
             "description" => "Halaman yang berisi ringkasan aktivitas harian, seperti total penjualan, jumlah transaksi, produk terlaris, dan performa penjualan dalam periode tertentu."
         );
-        return view('/dashboard')->with("page", $page);
+        return view('welcome')->with("page", $page);
     });
 
     Route::get('/pos', [PosController::class, 'index']);
@@ -52,8 +52,9 @@ Route::prefix('/admin')->group(function () {
     // get 1 product
     Route::get('/products/{id}', [ProductController::class, 'getProduct'])->name("products.getById");
     // add 1 row data product
-    Route::post('/products/add', [ProductController::class, 'addProduct'])->name("products.add");
-    ;
+    Route::post('/products/add', [ProductController::class, 'store'])->name("products.add");
+    Route::put('/products/update', [ProductController::class, 'update'])->name("products.update");
+    Route::delete('/products/destroy/{id?}', [ProductController::class, 'destroy'])->name("products.destroy");
 
     // =============== CART ===================================================
     // get All Cart Items
@@ -61,7 +62,7 @@ Route::prefix('/admin')->group(function () {
     // store data to cart
     Route::post('/cartItems/add', [CartController::class, 'store'])->name("cart.add");
     // delete 1 item in cart
-    Route::delete('/cartItems/{id}', [CartController::class, 'remove'])->name("cart.remove");
+    Route::delete('/cartItems/{id?}', [CartController::class, 'remove'])->name("cart.remove");
 
     // ============== Transaction ================================================
     // get All Transactions
@@ -73,13 +74,9 @@ Route::prefix('/admin')->group(function () {
     // route to send email invoice
     Route::get("/transactions/invoice/{id}", [TransactionController::class, "downloadInvoice"])->name("transaction.invoice");
 
-    Route::get('/inventory', function () {
-        $page = array(
-            "page" => "Inventory",
-            "description" => "Halaman untuk mengelola stok produk. Admin dapat menambah, mengedit, atau menghapus produk, serta memantau jumlah stok secara real time.",
-        );
-        return view('/inventory')->with("page", $page);
-    });
+
+    // =========================INVENTORY ========================================
+    Route::get('/inventory', [InventoryController::class, "index"]);
 
     // Route::get('/transactions', [TransactionController::class, "index"]);
     // Route::get('/transactions', [TransactionController::class, 'index'])->name("transaction.index");
@@ -116,9 +113,13 @@ Route::prefix('/admin')->group(function () {
         return view('/help')->with("page", $page);
     });
 
+    // });
+
 });
 
 // halaman 404
 Route::fallback(function () {
     return "404 Page not Found";
 });
+
+require __DIR__ . '/auth.php';

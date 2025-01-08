@@ -44,7 +44,7 @@ class ProductController extends Controller
         ], 201);
     }
 
-    public function update(Request $request, $id)
+    public function update(Request $request)
     {
         $validated = $request->validate([
             "name" => 'sometimes|required|string|max:255',
@@ -52,7 +52,7 @@ class ProductController extends Controller
             "stock" => 'sometimes|required|integer|min:0'
         ]);
 
-        $product = Product::findOrFail($id);
+        $product = Product::findOrFail($request->id);
         $product->update($validated);
 
         return response()->json([
@@ -69,7 +69,8 @@ class ProductController extends Controller
 
         return response()->json([
             "success" => true,
-            "message" => "Successfully deleted"
+            "message" => "Successfully deleted",
+            "id" => $id
         ]);
     }
 

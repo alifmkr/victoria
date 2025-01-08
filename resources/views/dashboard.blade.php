@@ -1,18 +1,17 @@
-<!DOCTYPE html>
-<html lang="en">
+<x-app-layout>
+    <x-slot name="header">
+        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            {{ __('Dashboard') }}
+        </h2>
+    </x-slot>
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <title>{{$page['page']}}</title>
-</head>
-
-<body>
-    <x-header />
-    <x-title>Dashboard</x-title>
-    <h1>{{$page['page']}}</h1>
-    <h3>{{$page['description']}}</h3>
-</body>
-
-</html>
+    <div class="py-12">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="p-6 bg-white border-b border-gray-200">
+                    You're logged in!
+                </div>
+            </div>
+        </div>
+    </div>
+</x-app-layout>

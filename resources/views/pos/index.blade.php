@@ -10,9 +10,9 @@
 
 <body>
     <x-header />
-    <x-title>POS</x-title>
     <div class="flex flex-col md:flex-row justify-center items-start gap-10 md:gap-5 px-10 py-10 w-full">
-        <form id="cart" method="post" onsubmit="return handleCartSubmit(event)" class="flex flex-col w-full gap-5 justify-end">
+        <form id="cart" method="post" onsubmit="return handleCartSubmit(event)"
+            class="flex flex-col w-full gap-5 justify-end">
             @csrf
             <h2 class="font-bold text-2xl">Form Tambah Produk</h2>
             <div class="flex flex-row justify-between items-center gap-2 w-full">
@@ -40,7 +40,8 @@
                 Tambah Pesanan
             </button>
         </form>
-        <div class="w-full text-center flex flex-col w-full justify-center items-end gap-10">
+        <div class="w-full text-center flex flex-col justify-center items-end gap-10">
+            <h2 class="font-bold text-2xl">Keranjang Belanja</h2>
             <table class="w-full">
                 <tr>
                     <th class="px-4 py-2">No</th>
@@ -67,6 +68,9 @@
                 </div>
             </div>
         </div>
+    </div>
+    <div id="loading" class="hidden fixed z-50 top-0 left-0 w-svw h-svh justify-center items-center bg-white">
+        <img src="{{ asset('assets/loading.jpg') }}" alt="... loading" class="w-44 rounded-full">
     </div>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
@@ -157,7 +161,7 @@
                 return response.json();
             }).then(data => {
                 if (data.success) {
-                    alert(data.message);
+                    // alert(data.message);
                     console.log(data.cart);
                     fetchCart();
                 }
@@ -250,10 +254,13 @@
         }
 
         async function handleRemoveItem(productId) {
-            const csrfToken = "{{csrf_token()}}";
-            const url = `/cartItems/${productId}`;
+            const loading = document.getElementById("loading");
+            loading.classList.replace("hidden", "flex");
 
-            await fetch(url, {
+            const csrfToken = "{{csrf_token()}}";
+            const url = "{{ route('cart.remove')}}";
+
+            await fetch(`${url}/${productId}`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
@@ -265,21 +272,25 @@
                 }
             }).then(data => {
                 fetchCart();
+                loading.classList.replace("flex", "hidden");
             }).catch(err => console.log(err));
         }
 
 
         async function handleCheckout() {
+            const loading = document.getElementById("loading");
+            loading.classList.replace("hidden", "flex");
+
             const csrfToken = "{{csrf_token()}}";
             const urlCart = "{{ route('cart.index') }}";
             const urlTransaction = "{{ route('transaction.add') }}";
 
             let data;
             let dataCart;
-            
+
             email = document.getElementById("email").value;
             validateEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if(!validateEmail.test(email)){
+            if (!validateEmail.test(email)) {
                 return alert("Email tidak Valid");
             }
 
@@ -322,7 +333,9 @@
                 console.log("response checkout: ", response);
                 return response.json();
             }).then(response => {
+                loading.classList.replace("flex", "hidden");
                 console.log("response data checkout: ", response);
+
                 Swal.fire({
                     title: "Success!",
                     text: response.message,
